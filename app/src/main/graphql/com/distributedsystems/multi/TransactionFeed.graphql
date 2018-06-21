@@ -1,0 +1,17 @@
+query TransactionFeed($hash: EthereumAddressHexValue!, $network: ETHEREUM_NETWORK) {
+    ethereumAddress(hash: $hash, network: $network) {
+        transactions {
+            from{
+                hash
+            }
+            to {
+                hash
+            }
+            value {
+              ether
+            }
+            status
+            hash
+        }
+    }
+}

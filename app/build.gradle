@@ -17,15 +17,23 @@ android {
     buildTypes {
         debug {
             buildConfigField "String", "SEED_GEN_PATH", "\"m/44'/60'/0'/0/\""
+            buildConfigField "String", "BASE_URL", "\"api-staging.multi.app\""
         }
 
         release {
             buildConfigField "String", "SEED_GEN_PATH", "\"m/44'/60'/0'/0/\""
+            buildConfigField "String", "BASE_URL", "\"api.multi.app\""
 
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
+}
+
+apollo {
+    customTypeMapping['EthereumAddressHexValue'] = "com.distributedsystems.multi.networking.scalars.EthereumAddressHexValue"
+    customTypeMapping['EthereumTransactionHashHexValue'] = "com.distributedsystems.multi.networking.scalars.EthereumTransactionHashHexValue"
+    customTypeMapping['BigNumber'] = "com.distributedsystems.multi.networking.scalars.BigNumber"
 }
 
 dependencies {
@@ -62,6 +70,7 @@ dependencies {
 
     // Apollo
     implementation "com.apollographql.apollo:apollo-runtime:${versions.apollo}"
+    implementation "com.apollographql.apollo:apollo-rx2-support:${versions.apollo}"
 
     // Web3j
     implementation "org.web3j:core:3.3.1-android"

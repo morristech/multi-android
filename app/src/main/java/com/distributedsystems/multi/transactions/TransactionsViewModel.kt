@@ -9,7 +9,7 @@ import com.distributedsystems.multi.TransactionFeedQuery
 import com.distributedsystems.multi.common.Preferences
 import com.distributedsystems.multi.db.Wallet
 import com.distributedsystems.multi.db.WalletDao
-import com.distributedsystems.multi.networking.scalars.EthereumAddressHexValue
+import com.distributedsystems.multi.networking.scalars.EthereumAddressString
 import com.distributedsystems.multi.type.ETHEREUM_NETWORK
 import io.reactivex.Flowable
 import io.reactivex.Observable
@@ -25,7 +25,7 @@ class TransactionsViewModel @Inject constructor(
 
     fun getTransactions(hash: String): Observable<Response<TransactionFeedQuery.Data>> {
         val transactionFeedQuery = TransactionFeedQuery.builder()
-                .hash(EthereumAddressHexValue(hash))
+                .address(EthereumAddressString(hash))
                 .network(ETHEREUM_NETWORK.ROPSTEN)
                 .build()
 

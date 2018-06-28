@@ -7,8 +7,9 @@ import com.apollographql.apollo.response.CustomTypeAdapter
 import com.apollographql.apollo.response.CustomTypeValue
 import com.distributedsystems.multi.BuildConfig
 import com.distributedsystems.multi.networking.scalars.BigNumber
-import com.distributedsystems.multi.networking.scalars.EthereumAddressHexValue
+import com.distributedsystems.multi.networking.scalars.EthereumAddressString
 import com.distributedsystems.multi.networking.scalars.EthereumTransactionHashHexValue
+import com.distributedsystems.multi.networking.scalars.HexValue
 import com.distributedsystems.multi.type.CustomType
 import dagger.Module
 import dagger.Provides
@@ -47,20 +48,20 @@ class GraphModule {
             OkHttpClient.Builder()
                     .addInterceptor(httpLoggingInterceptor)
                     .cache(cache)
-                    .writeTimeout(10, TimeUnit.SECONDS)
-                    .connectTimeout(10, TimeUnit.SECONDS)
-                    .readTimeout(10, TimeUnit.SECONDS)
+                    .writeTimeout(30, TimeUnit.SECONDS)
+                    .connectTimeout(30, TimeUnit.SECONDS)
+                    .readTimeout(30, TimeUnit.SECONDS)
                     .build()
 
     @Provides
     @Singleton
-    fun providesEthereumAddressCustomTypeAdapter() : CustomTypeAdapter<EthereumAddressHexValue> {
-        return object : CustomTypeAdapter<EthereumAddressHexValue> {
-            override fun decode(value: CustomTypeValue<*>): EthereumAddressHexValue {
-                return EthereumAddressHexValue(value.value.toString())
+    fun providesEthereumAddressCustomTypeAdapter() : CustomTypeAdapter<EthereumAddressString> {
+        return object : CustomTypeAdapter<EthereumAddressString> {
+            override fun decode(value: CustomTypeValue<*>): EthereumAddressString {
+                return EthereumAddressString(value.value.toString())
             }
 
-            override fun encode(value: EthereumAddressHexValue): CustomTypeValue<*> {
+            override fun encode(value: EthereumAddressString): CustomTypeValue<*> {
                 return CustomTypeValue.GraphQLString(value.toString())
             }
         }
@@ -96,14 +97,30 @@ class GraphModule {
 
     @Provides
     @Singleton
+    fun providesHexValueCustomTypeAdapter() : CustomTypeAdapter<HexValue> {
+        return object : CustomTypeAdapter<HexValue> {
+            override fun decode(value: CustomTypeValue<*>): HexValue {
+                return HexValue(value.value.toString())
+            }
+
+            override fun encode(value: HexValue): CustomTypeValue<*> {
+                return CustomTypeValue.GraphQLString(value.toString())
+            }
+        }
+    }
+
+    @Provides
+    @Singleton
     fun provideApolloClient (@NonNull okHttpClient: OkHttpClient,
-                             @NonNull addressHexAdapter: CustomTypeAdapter<EthereumAddressHexValue>,
+                             @NonNull hexValueAdapter: CustomTypeAdapter<HexValue>,
+                             @NonNull addressHexAdapter: CustomTypeAdapter<EthereumAddressString>,
                              @NonNull bigNumberAdapter: CustomTypeAdapter<BigNumber>,
                              @NonNull transactionHashAdapter: CustomTypeAdapter<EthereumTransactionHashHexValue>) : ApolloClient =
             ApolloClient.builder()
                     .serverUrl("https://${BuildConfig.BASE_URL}")
                     .okHttpClient(okHttpClient)
-                    .addCustomTypeAdapter(CustomType.ETHEREUMADDRESSHEXVALUE, addressHexAdapter)
+                    .addCustomTypeAdapter(CustomType.ETHEREUMADDRESSSTRING, addressHexAdapter)
+                    .addCustomTypeAdapter(CustomType.HEXVALUE, hexValueAdapter)
                     .addCustomTypeAdapter(CustomType.ETHEREUMTRANSACTIONHASHHEXVALUE, transactionHashAdapter)
                     .addCustomTypeAdapter(CustomType.BIGNUMBER, bigNumberAdapter)
                     .build()

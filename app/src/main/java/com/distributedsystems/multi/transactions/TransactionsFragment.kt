@@ -4,8 +4,11 @@ import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context
 import android.os.Bundle
+import android.support.design.widget.CoordinatorLayout
 import android.support.v4.app.Fragment
+import android.support.v4.content.ContextCompat
 import android.support.v7.widget.LinearLayoutManager
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -13,11 +16,14 @@ import android.widget.LinearLayout
 import com.distributedsystems.multi.MultiApp
 import com.distributedsystems.multi.R
 import com.distributedsystems.multi.common.GenericViewModelFactory
+import com.distributedsystems.multi.common.getColor
 import com.distributedsystems.multi.common.getViewModel
+import com.distributedsystems.multi.common.toDp
 import com.distributedsystems.multi.db.Wallet
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.schedulers.Schedulers
+import kotlinx.android.synthetic.main.component_card.*
 import kotlinx.android.synthetic.main.fragment_transactions.*
 import net.glxn.qrgen.android.QRCode
 import org.jetbrains.anko.toast
@@ -29,6 +35,7 @@ class TransactionsFragment : Fragment() {
 
     companion object {
         fun newInstance() : TransactionsFragment = TransactionsFragment()
+        private val LOG_TAG = TransactionsFragment::class.java.simpleName
     }
 
     @Inject
@@ -38,7 +45,8 @@ class TransactionsFragment : Fragment() {
     private var disposable = CompositeDisposable()
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        return inflater.inflate(R.layout.fragment_transactions, container, false)
+        val view = inflater.inflate(R.layout.fragment_transactions, container, false)
+        return view
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -49,12 +57,33 @@ class TransactionsFragment : Fragment() {
         transactions_list.layoutManager = LinearLayoutManager(context, LinearLayout.VERTICAL, false)
         renderWalletDetails()
         setOnAddressLongPress()
+        setAppBarStateChangeListener()
     }
 
 
     override fun onStop() {
         super.onStop()
         disposable.clear()
+    }
+
+    private fun setAppBarStateChangeListener() {
+        appbar.addOnOffsetChangedListener { appBarLayout, verticalOffset ->
+            Log.i(LOG_TAG, "Vertical Offset: $verticalOffset")
+            val lp = list_holder.layoutParams as CoordinatorLayout.LayoutParams
+
+            list_holder.layoutParams = lp.apply {
+                    marginStart = toDp(Math.round(16 - (Math.abs(verticalOffset)/50).toFloat()))
+                    marginEnd = toDp(Math.round((16 - Math.abs(verticalOffset)/50).toFloat()))
+            }
+
+            wallet_holder.rotationX = (verticalOffset/18f)
+
+            if(Math.abs(verticalOffset) >= appBarLayout.totalScrollRange) {
+                list_holder.setBackgroundColor(getColor(R.color.paleWhite))
+            } else {
+                list_holder.background = ContextCompat.getDrawable(context!!, R.drawable.transactions_list_holder_background)
+            }
+        }
     }
 
     private fun renderWalletDetails() {
@@ -76,7 +105,7 @@ class TransactionsFragment : Fragment() {
     }
 
     private fun getTransactions() {
-        viewModel.getTransactions(wallet!!.ethAddress)
+        viewModel.getTransactions("0xEf13759c4Ae259aE9D17D43E65EF8c6C39035F24")
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe {
@@ -87,6 +116,7 @@ class TransactionsFragment : Fragment() {
 
                     if(walletTransactions.isNotEmpty()) {
                         empty_list_label.visibility = View.GONE
+                        swipeRefreshLayout.visibility = View.VISIBLE
                         transactions_list.visibility = View.VISIBLE
                         transactions_list.adapter = TransactionsListAdapter(wallet!!, walletTransactions, context!!)
                     } else {

@@ -3,11 +3,13 @@ package com.distributedsystems.multi
 import android.os.Bundle
 import android.support.design.widget.BottomNavigationView
 import android.support.v7.app.AppCompatActivity
+import io.reactivex.disposables.CompositeDisposable
 import kotlinx.android.synthetic.main.activity_main.*
 
 class MainActivity : AppCompatActivity() {
 
     private var currentFragment : Int = R.id.profile
+    private var disposable = CompositeDisposable()
 
     private val mOnNavigationItemSelectedListener = BottomNavigationView.OnNavigationItemSelectedListener { item ->
         if(item.itemId != currentFragment) {
@@ -32,6 +34,10 @@ class MainActivity : AppCompatActivity() {
             }
         }
         false
+    }
+
+    fun getDisposable() : CompositeDisposable {
+        return disposable
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {

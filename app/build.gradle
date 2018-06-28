@@ -22,7 +22,7 @@ android {
 
         release {
             buildConfigField "String", "SEED_GEN_PATH", "\"m/44'/60'/0'/0/\""
-            buildConfigField "String", "BASE_URL", "\"api.multi.app\""
+            buildConfigField "String", "BASE_URL", "\"api.cleargraph.com\""
 
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
@@ -78,6 +78,9 @@ dependencies {
 
     // QR Code Generation
     implementation "com.github.kenglxn.QRGen:android:2.4.0"
+
+    // Bottom Sheet Lib
+    implementation 'com.flipboard:bottomsheet-core:1.5.3'
 
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'com.android.support.test:runner:1.0.2'

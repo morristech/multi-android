@@ -40,10 +40,6 @@ class SetupActivity : AppCompatActivity() {
 
     }
 
-    fun replaceFragment(fragment: Fragment) {
-        replaceFragment(R.id.main_fragment_holder, fragment)
-    }
-
     fun addAndReplaceFragment(fragment: Fragment) {
         addAndReplaceFragment(R.id.main_fragment_holder, fragment)
     }

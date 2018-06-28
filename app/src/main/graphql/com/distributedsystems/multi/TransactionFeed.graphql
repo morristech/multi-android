@@ -1,11 +1,11 @@
-query TransactionFeed($hash: EthereumAddressHexValue!, $network: ETHEREUM_NETWORK) {
-    ethereumAddress(hash: $hash, network: $network) {
+query TransactionFeed($address: EthereumAddressString!, $network: ETHEREUM_NETWORK) {
+    ethereumAddress(address: $address, network: $network) {
         transactions {
             from{
-                hash
+                hex
             }
             to {
-                hash
+                hex
             }
             value {
               ether

@@ -33,16 +33,16 @@ class TransactionsListAdapter(
 
     override fun onBindViewHolder(holder: TransactionHolder, position: Int) {
         val transaction = transactionsList[position]
-        val outboundTransaction = transaction.from()!!.hash().toString() == currentWallet.ethAddress
+        val outboundTransaction = transaction.from()!!.hex().toString() == currentWallet.ethAddress
         var hash = ""
         var directionIcon : Drawable? = null
 
         if(outboundTransaction) {
             directionIcon = ContextCompat.getDrawable(context, R.drawable.ic_transaction_out)
-            hash = transaction.to()!!.hash().toString()
+            hash = transaction.to()!!.hex().toString()
         } else {
             directionIcon = ContextCompat.getDrawable(context, R.drawable.ic_transaction_in)
-            hash = transaction.from()!!.hash().toString()
+            hash = transaction.from()!!.hex().toString()
         }
 
         holder.transactionValue.text = context.getString(R.string.value_in_eth, df.format(transaction.value()!!.ether().value))

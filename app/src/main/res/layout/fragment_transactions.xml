@@ -1,98 +1,56 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.design.widget.CoordinatorLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/main_content"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:background="@color/pressedWhite"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+    android:layout_height="match_parent">
 
-    <android.support.constraint.ConstraintLayout
-        android:id="@+id/wallet_holder"
-        android:layout_width="0dp"
-        android:layout_height="200dp"
-        android:background="@drawable/wallet_holder_background"
-        android:layout_marginStart="48dp"
-        android:layout_marginEnd="48dp"
-        app:layout_constraintVertical_bias="0.05"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent">
+    <android.support.design.widget.AppBarLayout
+        android:id="@+id/appbar"
+        android:background="@color/paleWhite"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:elevation="0dp">
 
-        <TextView
-            android:id="@+id/wallet_name"
-            android:layout_width="wrap_content"
+        <android.support.design.widget.CollapsingToolbarLayout
+            android:id="@+id/collapsing_toolbar"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textSize="20sp"
-            android:textStyle="bold"
-            android:textAllCaps="true"
-            android:textColor="@color/paleWhite"
-            android:text="@string/my_wallet_hint"
-            android:layout_marginStart="16dp"
-            android:layout_marginTop="16dp"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="@id/wallet_holder"/>
+            app:layout_scrollFlags="scroll|enterAlwaysCollapsed|snap">
 
-        <TextView
-            android:id="@+id/eth_address"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="16dp"
-            android:layout_marginStart="16dp"
-            android:textColor="@color/paleWhite"
-            android:textSize="14sp"
-            android:textAllCaps="true"
-            android:fontFamily="monospace"
-            android:longClickable="true"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toStartOf="parent"/>
+            <android.support.constraint.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
 
-        <TextView
-            android:id="@+id/issue_date"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="16dp"
-            android:layout_marginTop="8dp"
-            android:textColor="@color/paleWhite"
-            android:fontFamily="monospace"
-            android:maxLines="1"
-            app:layout_constraintTop_toBottomOf="@+id/wallet_name"
-            app:layout_constraintStart_toStartOf="parent" />
+                <include layout="@layout/component_card"
+                    android:id="@+id/wallet_holder"
+                    android:layout_width="0dp"
+                    android:layout_height="200dp"
+                    android:layout_marginTop="16dp"
+                    android:layout_marginBottom="16dp"
+                    android:layout_marginStart="48dp"
+                    android:layout_marginEnd="48dp"
+                    app:layout_constraintVertical_bias="0.05"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent"/>
 
-        <ImageView
-            android:id="@+id/qr_code"
-            android:layout_width="75dp"
-            android:layout_height="75dp"
-            android:background="@color/lightGrey"
-            android:layout_marginTop="16dp"
-            android:layout_marginEnd="16dp"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent"/>
-
-        <ImageView
-            android:id="@+id/wallet_type_icon"
-            android:layout_width="106dp"
-            android:layout_height="20dp"
-            android:background="@drawable/ic_ethereum_full"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintBottom_toBottomOf="parent"
-            android:layout_marginEnd="16dp"
-            android:layout_marginBottom="16dp"/>
-
-    </android.support.constraint.ConstraintLayout>
+            </android.support.constraint.ConstraintLayout>
+        </android.support.design.widget.CollapsingToolbarLayout>
+    </android.support.design.widget.AppBarLayout>
 
     <LinearLayout
         android:id="@+id/list_holder"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:layout_marginStart="8dp"
-        android:layout_marginEnd="8dp"
-        android:layout_marginTop="32dp"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
+        android:animateLayoutChanges="true"
         android:orientation="vertical"
-        android:background="@drawable/transactions_list_holder_background"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/wallet_holder"
-        app:layout_constraintBottom_toBottomOf="parent">
+        app:layout_behavior="@string/appbar_scrolling_view_behavior"
+        android:background="@drawable/transactions_list_holder_background">
 
         <TextView
             android:id="@+id/list_title"
@@ -114,7 +72,7 @@
         <TextView
             android:id="@+id/empty_list_label"
             android:layout_width="wrap_content"
-            android:layout_height="0dp"
+            android:layout_height="wrap_content"
             android:layout_weight="1"
             android:visibility="gone"
             android:text="@string/you_don_t_have_any_transactions"
@@ -123,14 +81,19 @@
             android:foregroundGravity="center"
             android:layout_gravity="center"/>
 
-        <android.support.v7.widget.RecyclerView
-            android:id="@+id/transactions_list"
+        <android.support.v4.widget.SwipeRefreshLayout
+            android:id="@+id/swipeRefreshLayout"
             android:visibility="gone"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
-            android:layout_marginEnd="16dp"/>
+            android:layout_marginEnd="16dp"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent">
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/transactions_list"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"/>
+        </android.support.v4.widget.SwipeRefreshLayout>
 
     </LinearLayout>
 
-</android.support.constraint.ConstraintLayout>
+</android.support.design.widget.CoordinatorLayout>

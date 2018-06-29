@@ -58,4 +58,5 @@
     </string>
     <string name="success">Success</string>
     <string name="declined">Declined</string>
+    <string name="load_transactions_error">Unable to load transactions</string>
 </resources>

@@ -33,6 +33,7 @@
         android:layout_marginStart="16dp"
         android:textSize="12sp"
         android:textAllCaps="true"
+        android:textStyle="bold"
         android:textColor="@color/successGreen"
         android:gravity="bottom|start"
         app:layout_constraintBottom_toBottomOf="@id/direction_icon"

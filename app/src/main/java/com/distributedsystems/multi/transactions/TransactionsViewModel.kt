@@ -1,8 +1,9 @@
 package com.distributedsystems.multi.transactions
 
+import android.arch.lifecycle.MutableLiveData
 import android.arch.lifecycle.ViewModel
+import android.util.Log
 import com.apollographql.apollo.ApolloClient
-import com.apollographql.apollo.api.Response
 import com.apollographql.apollo.rx2.Rx2Apollo
 import com.distributedsystems.multi.MultiApp
 import com.distributedsystems.multi.TransactionFeedQuery
@@ -11,9 +12,9 @@ import com.distributedsystems.multi.db.Wallet
 import com.distributedsystems.multi.db.WalletDao
 import com.distributedsystems.multi.networking.scalars.EthereumAddressString
 import com.distributedsystems.multi.type.ETHEREUM_NETWORK
-import io.reactivex.Flowable
-import io.reactivex.Observable
+import io.reactivex.schedulers.Schedulers
 import org.jetbrains.anko.defaultSharedPreferences
+import org.jetbrains.anko.toast
 import javax.inject.Inject
 
 class TransactionsViewModel @Inject constructor(
@@ -21,29 +22,40 @@ class TransactionsViewModel @Inject constructor(
         private val walletDb: WalletDao
 ) : ViewModel() {
 
-    private var transactionsModel: TransactionsModel = TransactionsModel()
+    companion object {
+        private val LOG_TAG = TransactionsViewModel::class.java.simpleName
+    }
 
-    fun getTransactions(hash: String): Observable<Response<TransactionFeedQuery.Data>> {
+    val transactions = MutableLiveData<List<TransactionFeedQuery.Transaction>>()
+    val wallet = MutableLiveData<Wallet>()
+
+    fun getTransactions() {//: Observable<Response<TransactionFeedQuery.Data>> {
+        val hash = wallet.value?.ethAddress!!
         val transactionFeedQuery = TransactionFeedQuery.builder()
                 .address(EthereumAddressString(hash))
                 .network(ETHEREUM_NETWORK.ROPSTEN)
                 .build()
 
         val apolloCall = apolloClient.query(transactionFeedQuery)
-        return Rx2Apollo.from(apolloCall)
+        Rx2Apollo.from(apolloCall)
+                .subscribeOn(Schedulers.io())
+                .subscribe({
+                    transactions.postValue(it.data()!!.ethereumAddress()!!.transactions())
+                }, {
+                    Log.e(LOG_TAG, it.localizedMessage)
+                    MultiApp.get().toast("Unable to load transactions")
+                })
     }
 
-    fun getWallets() : Flowable<List<Wallet>> {
-        return walletDb.getAll()
-    }
-
-    fun getDefaultWallet() : Flowable<Wallet> {
+    fun getDefaultWallet() {
         val defaultWalletId = MultiApp.get().defaultSharedPreferences
                 .getLong(Preferences.PREF_DEFAULT_WALLET_ID, 0)
-        return walletDb.getWallet(defaultWalletId)
-    }
-
-    fun setTransactionsForWallet(wallet: Wallet, transactions: List<TransactionFeedQuery.Transaction>) {
-        transactionsModel.transactions!!.plus(Pair(wallet.id, transactions))
+        walletDb.getWallet(defaultWalletId)
+                .subscribeOn(Schedulers.io())
+                .subscribe({
+                    wallet.postValue(it)
+                }, {
+                    MultiApp.get().toast("Unable to load wallet")
+                })
     }
 }
